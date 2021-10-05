@@ -13,53 +13,34 @@ db.connect(function (err) {
 });
 
 router.get("/destination", function (req, res) {
-  var pickup_pt = [];
-  var down_pt = [];
-  var pickup_bs = [];
-  var down_bs = [];
-  var sql =
+  let temp_name_route = [];
+  let point_up = [];
+  let point_down = [];
+  let routedata = [];
+  const sql_destination = "SELECT `destination`.* FROM `destination`";
+  db.query(sql_destination, function (err, result) {
+    for (i in result) {
+      temp_name_route.push(result[i].name);
+    }
+  });
+  const sql =
     "SELECT * FROM `destination` JOIN `destination_detail` ON `destination`.`destination_id` = `destination_detail`.`destination_id`";
   db.query(sql, function (err, result) {
-    for (i in result) {
-      if (result[i].name == "กรุงเทพ-พัทยา") {
-        if (result[i].state == 1) {
-          pickup_pt.push({ title: result[i].pick_point });
-        } else {
-          down_pt.push({ title: result[i].pick_point });
-        }
-      } else {
-        if (result[i].state == 1) {
-          pickup_bs.push({ title: result[i].pick_point });
-        } else {
-          down_bs.push({ title: result[i].pick_point });
+    for (i in temp_name_route) {
+      for (x in result) {
+        if (result[x].name == temp_name_route[i]) {
+          if (result[x].state == 1) {
+            point_up.push({ title: result[x].pick_point });
+          } else {
+            point_down.push({ title: result[x].pick_point });
+          }
         }
       }
+      routedata.push({ title: temp_name_route[i],point_up:point_up,point_down:point_down});
+      point_up = [];
+      point_down = [];
     }
-    res.send({
-      pickup_pt: pickup_pt,
-      down_pt: down_pt,
-      pickup_bs: pickup_bs,
-      down_bs: down_bs,
-    });
-  });
-});
-
-router.get("/update/:ticket_id/:status", function (req, res) {
-  var status = req.params.status;
-  var ticket_id = req.params.ticket_id;
-  var sql =
-    "UPDATE `ticket` SET `status_id` = '" +
-    status +
-    "' WHERE `ticket`.`ticket_id` = '" +
-    ticket_id +
-    "'";
-  //UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = 1;
-  db.query(sql, function (err, result) {
-    if (err) {
-      console.log("Error");
-    } else {
-      res.send("check");
-    }
+    res.send(routedata);
   });
 });
 

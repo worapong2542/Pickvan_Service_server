@@ -46,7 +46,7 @@ router.get("/getschedule/:date", function (req, res) {
     "SELECT * FROM `schedule` JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` JOIN `destination` ON `van`.`destination_id` = `destination`.`destination_id` WHERE `schedule`.`date` =" +
     "'" +
     date +
-    "'";
+    "' ORDER BY `schedule`.`time` ASC";
   db.query(sql, function (err, result) {
     for (i in result) {
       data_format.push({
@@ -183,9 +183,9 @@ router.get("/ticketdata/:id", function (req, res) {
   db.query(sql, function (err, result) {
     for (i in result) {
       if (result[i].customer_id == 0) {
-        walkin += 1;
+        walkin += result[i].seat_amount;
       } else {
-        app += 1;
+        app += result[i].seat_amount;
         ticket_id += result[i].ticket_id + ",  ";
       }
     }
@@ -194,22 +194,31 @@ router.get("/ticketdata/:id", function (req, res) {
 });
 
 router.get("/checkticket/", function (req, res) {
-  const today =new Date((new Date()).getTime() + (600000));
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const time =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  const dateTime = date + " " + time;
-  res.send(dateTime);
-});
-
-router.get("/test", function (req, res) {
   const sql = "SELECT `ticket`.`time_on_buy` FROM `ticket` ";
   db.query(sql, function (err, result) {
     if (result[0].time_on_buy < result[1].time_on_buy) {
       console.log("1");
     }
     res.send(result[0].time_on_buy);
+  });
+});
+
+router.get("/update/:ticket_id/:status", function (req, res) {
+  var status = req.params.status;
+  var ticket_id = req.params.ticket_id;
+  var sql =
+    "UPDATE `ticket` SET `status_id` = '" +
+    status +
+    "' WHERE `ticket`.`ticket_id` = '" +
+    ticket_id +
+    "'";
+  //UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = 1;
+  db.query(sql, function (err, result) {
+    if (err) {
+      console.log("Error");
+    } else {
+      res.send("check");
+    }
   });
 });
 

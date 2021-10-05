@@ -3,10 +3,9 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 app.use(express.json());
-const seller = require('./routes/seller');
-const customer = require('./routes/customer');
-const auto_cron = require('./routes/auto_cron');
-const cron = require('node-cron');
+const seller = require("./routes/seller");
+const customer = require("./routes/customer");
+const cron = require("node-cron");
 var mysql = require("mysql");
 var db = mysql.createConnection({
   host: "localhost",
@@ -20,20 +19,54 @@ db.connect(function (err) {
 });
 
 //path use
-app.use('/seller', seller);
-app.use('/customer', customer);
+app.use("/seller", seller);
+app.use("/customer", customer);
 
 //work on time set (sec min hour day mounth)
 //https://www.npmjs.com/package/node-cron
-
 //5sec
-// cron.schedule('* * 9 * * *', () => {
-//   const sql = ""
-// });
+cron.schedule("*/10 * * * * *", () => {
+  const today = new Date(new Date());
+  const date =
+    today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
+  const time =
+    today.getHours() + "" + today.getMinutes() + "" + today.getSeconds();
+  const dateTime = date + "" + time;
+  const sql_get =
+    "SELECT `ticket`.`ticket_id`,`ticket`.`status_id`,`ticket`.`time_exp` FROM `ticket` WHERE `ticket`.`status_id` = 0 AND `ticket`.`time_exp` <= " +
+    dateTime;
+  db.query(sql_get, function (err, result) {
+    for (i in result) {
+      if (result[i].time_exp < dateTime) {
+        const sql_update =
+          "UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = " +
+          result[i].ticket_id;
+        db.query(sql_update, function (err, result) {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }
+    }
+  });
+});
 
-// cron.schedule('* 10 * * * *', () => {
-//   console.log('running a task every minute');
-// });
+cron.schedule("59 59 23 * * *", () => {
+  const today = new Date(new Date().getTime() + 2 * 86400000);
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  const sql_get =
+    "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES (NULL, '9:00', '" +
+    date +
+    "', '120', 'กก1234'), (NULL, '15:00', '" +
+    date +
+    "', '120', 'รร5678'), (NULL, '12:00', '" +
+    date +
+    "', '160', 'บบ0753');";
+  db.query(sql_get, function (err, result) {
+    console.log(result);
+  });
+});
 
 app.listen("3001", () => {
   console.log("Server is running on port 3001");
