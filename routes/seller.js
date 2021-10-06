@@ -213,7 +213,7 @@ router.get("/update/:ticket_id/:status", function (req, res) {
     if (err) {
       console.log("Error");
     } else {
-      res.send("check");
+      res.send("อัพเดตเรียบร้อย");
     }
   });
 });
