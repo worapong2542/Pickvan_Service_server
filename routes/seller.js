@@ -1,7 +1,7 @@
 const express = require("express");
-var router = express.Router();
-var mysql = require("mysql");
-var db = mysql.createConnection({
+const router = express.Router();
+const mysql = require("mysql");
+const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
@@ -40,9 +40,9 @@ router.get("/vandata", function (req, res) {
 });
 
 router.get("/getschedule/:date", function (req, res) {
-  var date = req.params.date;
+  const date = req.params.date;
   let data_format = [];
-  var sql =
+  const sql =
     "SELECT * FROM `schedule` JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` JOIN `destination` ON `van`.`destination_id` = `destination`.`destination_id` WHERE `schedule`.`date` =" +
     "'" +
     date +
@@ -91,14 +91,14 @@ router.get("/getschedule_select_id/:id/:license", function (req, res) {
 router.get(
   "/addschedule/:time/:day/:month/:year/:price/:license_plate",
   function (req, res) {
-    var time = req.params.time + ":" + "00" + "." + "0000";
-    var day = req.params.day;
-    var month = req.params.month;
-    var year = req.params.year;
-    var price = req.params.price;
-    var license_plate = req.params.license_plate;
-    var date = +year + "/" + month + "/" + day;
-    var sql =
+    const time = req.params.time + ":" + "00" + "." + "0000";
+    const day = req.params.day;
+    const month = req.params.month;
+    const year = req.params.year;
+    const price = req.params.price;
+    const license_plate = req.params.license_plate;
+    const date = +year + "/" + month + "/" + day;
+    const sql =
       "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES(NULL,'" +
       time +
       "','" +
@@ -126,8 +126,7 @@ router.get(
     const seat_buy = req.params.seat_buy;
     const seat_all_van = req.params.seat_all_van;
     let temp_seat = 0;
-    ///+sec*1000
-    const today = new Date(new Date().getTime() + 600000);
+    const today = new Date();
     const date =
       today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
     const time =
@@ -144,7 +143,7 @@ router.get(
       point_down +
       "', '" +
       seat_buy +
-      "', '', '0', current_timestamp(), '" +
+      "', '', '2', current_timestamp(), '" +
       dateTime +
       "')";
     console.log(sql);
@@ -194,25 +193,22 @@ router.get("/ticketdata/:id", function (req, res) {
 });
 
 router.get("/checkticket/", function (req, res) {
-  const sql = "SELECT `ticket`.`time_on_buy` FROM `ticket` ";
+  const sql =
+    "SELECT `ticket`.`ticket_id`,`destination`.`name`,`schedule`.`time`,`schedule`.`date`,`ticket`.`seat_amount`,`schedule`.`price` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` INNER JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` INNER JOIN `destination` ON `destination`.`destination_id` = `van`.`destination_id` WHERE `ticket`.`status_id` = '1'";
   db.query(sql, function (err, result) {
-    if (result[0].time_on_buy < result[1].time_on_buy) {
-      console.log("1");
-    }
-    res.send(result[0].time_on_buy);
+    res.send(result)
   });
 });
 
 router.get("/update/:ticket_id/:status", function (req, res) {
-  var status = req.params.status;
-  var ticket_id = req.params.ticket_id;
-  var sql =
+  const ticket_id = req.params.ticket_id;
+  const status = req.params.status;
+  const sql =
     "UPDATE `ticket` SET `status_id` = '" +
     status +
     "' WHERE `ticket`.`ticket_id` = '" +
     ticket_id +
     "'";
-  //UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = 1;
   db.query(sql, function (err, result) {
     if (err) {
       console.log("Error");

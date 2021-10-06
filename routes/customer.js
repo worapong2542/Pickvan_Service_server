@@ -43,5 +43,7 @@ router.get("/destination", function (req, res) {
     res.send(routedata);
   });
 });
+///+sec*1000
+//const today = new Date(new Date().getTime() + 600000);
 
 module.exports = router;
