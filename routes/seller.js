@@ -21,7 +21,6 @@ router.get("/vandata", function (req, res) {
     for (i in result) {
       temp_data.push(result[i].name);
     }
-    temp_data;
   });
   const sql =
     "SELECT `van`.`license_plate`,`destination`.`name` FROM `van` JOIN `destination` ON `van`.`destination_id`=`destination`.`destination_id`";
@@ -54,6 +53,7 @@ router.get("/getschedule/:date", function (req, res) {
         time: result[i].time,
         destination: result[i].name,
         license: result[i].license_plate,
+        price:result[i].price,
       });
     }
     res.send(data_format);
@@ -84,7 +84,7 @@ router.get("/getschedule_select_id/:id/:license", function (req, res) {
     for (i in result) {
       set_free -= result[i].seat_amount;
     }
-    res.send({ vanseat: vanseat, point_down: point_down, set_free: set_free });
+    res.send({ vanseat: vanseat, point_down: point_down, set_free: set_free ,});
   });
 });
 

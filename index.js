@@ -5,6 +5,7 @@ app.use(cors());
 app.use(express.json());
 const seller = require("./routes/seller");
 const customer = require("./routes/customer");
+const user = require("./routes/login");
 const cron = require("node-cron");
 var mysql = require("mysql");
 var db = mysql.createConnection({
@@ -21,6 +22,7 @@ db.connect(function (err) {
 //path use
 app.use("/seller", seller);
 app.use("/customer", customer);
+app.use("/user", user);
 
 //work on time set (sec min hour day mounth)
 //https://www.npmjs.com/package/node-cron
@@ -51,18 +53,18 @@ cron.schedule("*/10 * * * * *", () => {
   });
 });
 
-cron.schedule("59 59 23 * * *", () => {
+cron.schedule("59 45 12 * * *", () => {
   const today = new Date(new Date().getTime() + 2 * 86400000);
   const date =
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   const sql_get =
     "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES (NULL, '9:00', '" +
     date +
-    "', '120', 'กก1234'), (NULL, '15:00', '" +
+    "', '120', 'กง1234'), (NULL, '15:00', '" +
     date +
-    "', '120', 'รร5678'), (NULL, '12:00', '" +
+    "', '120', 'นย5432'), (NULL, '12:00', '" +
     date +
-    "', '160', 'บบ0753');";
+    "', '160', 'ปพ8543');";
   db.query(sql_get, function (err, result) {
     console.log(result);
   });
