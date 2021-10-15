@@ -53,7 +53,7 @@ router.get("/getschedule/:date", function (req, res) {
         time: result[i].time,
         destination: result[i].name,
         license: result[i].license_plate,
-        price:result[i].price,
+        price: result[i].price,
       });
     }
     res.send(data_format);
@@ -84,7 +84,7 @@ router.get("/getschedule_select_id/:id/:license", function (req, res) {
     for (i in result) {
       set_free -= result[i].seat_amount;
     }
-    res.send({ vanseat: vanseat, point_down: point_down, set_free: set_free ,});
+    res.send({ vanseat: vanseat, point_down: point_down, set_free: set_free });
   });
 });
 
@@ -196,7 +196,7 @@ router.get("/checkticket/", function (req, res) {
   const sql =
     "SELECT `ticket`.`ticket_id`,`destination`.`name`,`schedule`.`time`,`schedule`.`date`,`ticket`.`seat_amount`,`schedule`.`price` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` INNER JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` INNER JOIN `destination` ON `destination`.`destination_id` = `van`.`destination_id` WHERE `ticket`.`status_id` = '1'";
   db.query(sql, function (err, result) {
-    res.send(result)
+    res.send(result);
   });
 });
 
@@ -217,5 +217,13 @@ router.get("/update/:ticket_id/:status", function (req, res) {
     }
   });
 });
+
+router.get("/getSellerUsername/"),
+  function (req, res) {
+    const sql = "SELECT `seller_name` FROM `seller`"
+    db.query(sql, function (err, result) {
+      res.send(result);
+    });
+  };
 
 module.exports = router;
