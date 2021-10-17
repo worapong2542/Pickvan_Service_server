@@ -43,7 +43,7 @@ router.post("/regist_customer",function(req,res){
     if(result.length>0){  
       res.send({status:0})
     }else{
-      const sqlInsert = "INSERT INTO `customer`(`customer_id`, `customer_userName`, `customer_email`, `customer_phone_num`, `customer_password`) VALUES (NULL,'"+userName+"','"+email+"','"+password+"','"+phoneNum+"')"
+      const sqlInsert = "INSERT INTO `customer`(`customer_id`, `customer_userName`, `customer_email`, `customer_phone_num`, `customer_password`) VALUES (NULL,'"+userName+"','"+email+"','"+phoneNum+"','"+password+"')"
       db.query(sqlInsert, function (err, result) {
       console.log(result.insertId);
         res.send({status:1,id:result.insertId})
