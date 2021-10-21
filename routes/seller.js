@@ -218,12 +218,54 @@ router.get("/update/:ticket_id/:status", function (req, res) {
   });
 });
 
-router.get("/getSellerUsername/"),
-  function (req, res) {
-    const sql = "SELECT `seller_name` FROM `seller`"
+
+
+router.get("/get_auto_schedule_data", function (req, res) {
+  const sql = "SELECT `auto_schedule`.* ,`van`.`van_seat`,`destination`.`name` FROM `auto_schedule` INNER JOIN `van` ON `van`.`license_plate` = `auto_schedule`.`license_plate` INNER JOIN `destination` ON `destination`.`destination_id` = `van`.`destination_id` ORDER BY `auto_schedule`.`time` ASC";
     db.query(sql, function (err, result) {
       res.send(result);
     });
-  };
+});
+
+router.get("/auto_schedule_del/:license_plate/:time", function (req, res) {
+  const license_plate = req.params.license_plate;
+  const time = req.params.time;
+  const sql = "DELETE `license_plate`, `price`, `time` FROM `auto_schedule` WHERE `license_plate` ='"+license_plate+"' AND `time` ='"+time +"'";
+  db.query(sql, function (err, result) {
+      if(err){
+        res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง")
+      }else{
+        res.send("ลบข้อมูลเรียบร้อย")
+      }
+    });
+});
+
+router.get("/auto_schedule_update/:license_plate/:time/:price", function (req, res) {
+  const license_plate = req.params.license_plate;
+  const time = req.params.time;
+  const price = req.params.price;
+  const sql = "UPDATE `auto_schedule` SET `price`='"+price+"',`time`='"+time+"' WHERE `license_plate` = '"+license_plate+"'";
+  db.query(sql, function (err, result) {
+      if(err){
+        res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง")
+      }else{
+        res.send("แก้ไขข้อมูลเรียบร้อย")
+      }
+    });
+});
+
+router.get("/auto_schedule_add/:license_plate/:time/:price", function (req, res) {
+  const license_plate = req.params.license_plate;
+  const time = req.params.time;
+  const price = req.params.price;
+  const sql = "";
+  db.query(sql, function (err, result) {
+      if(err){
+        res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง")
+      }else{
+        res.send("แก้ไขข้อมูลเรียบร้อย")
+      }
+    });
+});
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
+const bodyparser = require('body-parser');
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -11,8 +12,6 @@ const db = mysql.createConnection({
 db.connect(function (err) {
   if (err) console.log(err);
 });
-
-const bodyparser = require('body-parser');
 
 router.post("/login_seller",function(req,res){
    
@@ -36,11 +35,12 @@ router.post("/regist_customer",function(req,res){
   const email = req.body.email;
   const password = req.body.password;
   const phoneNum = req.body.phoneNum;
-  
+  console.log(password)
   const sql = "SELECT `customer`.`customer_email` FROM `customer` WHERE `customer_email` =  '" + email + "'"
 
   db.query(sql, function (err, result) { 
     if(result.length>0){  
+      console.log(result)
       res.send({status:0})
     }else{
       const sqlInsert = "INSERT INTO `customer`(`customer_id`, `customer_userName`, `customer_email`, `customer_phone_num`, `customer_password`) VALUES (NULL,'"+userName+"','"+email+"','"+phoneNum+"','"+password+"')"

@@ -1,6 +1,7 @@
 const express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
+const bodyparser = require('body-parser');
 var db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -91,12 +92,6 @@ router.get("/getschedule/:date", function (req, res) {
     }
     res.send(data);
   });
-});
-
-router.get("/test", function (req, res) {
-  const pets = ["cat", "dog", "bat"];
-  let x = 0;
-  res.send("1");
 });
 
 ///+sec*1000
