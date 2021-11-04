@@ -13,20 +13,22 @@ db.connect(function (err) {
   if (err) console.log(err);
 });
 
-router.post("/login_seller",function(req,res){
-   
-  const email = req.body.email;
-  const password = req.body.password;
-
-  const sql = "SELECT `seller`.`seller_id`,`seller`.`seller_name` FROM `seller` WHERE `seller_mail`= '" + email + "' AND `seller_password` = '" + password + "'"
-  
+router.post("/login_seller",function(req,res){ 
+  const sql = "SELECT `seller`.`seller_id`,`seller`.`seller_name` FROM `seller` WHERE `seller_mail`= '" + req.body.email + "' AND `seller_password` = '" + req.body.password + "'"
   db.query(sql, function (err, result) { 
     if(result.length>0){ 
       res.send({status:1,name:result[0].seller_name,seller_id:result[0].seller_id})
     }else res.send({status:0}) 
   });
-  
+})
 
+router.post("/login_customer",function(req,res){
+  const sql = "SELECT * FROM `customer` WHERE `customer_email`= '" + req.body.email + "' AND `customer_password` = '" + req.body.password + "'"
+  db.query(sql, function (err, result) { 
+    if(result.length>0){ 
+      res.send({status:1,name:result[0].customer_userName,customer_id:result[0].customer_id})
+    }else res.send({status:0}) 
+  });
 })
 
 router.post("/regist_customer",function(req,res){
