@@ -1,7 +1,7 @@
 const express = require("express");
 var router = express.Router();
 var mysql = require("mysql");
-const bodyparser = require('body-parser');
+const bodyparser = require("body-parser");
 var db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -49,15 +49,16 @@ router.get("/destination", function (req, res) {
   });
 });
 
-router.get("/getschedule/:date", function (req, res) {
-  const date = req.params.date;
+router.get("/getschedule/:date/:location", function (req, res) {
   const seat_select = 2;
   let seat_onbuy = 0;
   let temp_schedule_id = [];
   let data = [];
   sql =
     "SELECT `schedule`.*,`ticket`.`seat_amount`,`ticket`.`status_id`,`destination`.`name`,`van`.`van_seat` FROM `schedule` LEFT JOIN `ticket` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` LEFT JOIN `van` ON `schedule`.`license_plate`=`van`.`license_plate` LEFT JOIN `destination` ON `van`.`destination_id` = `destination`.`destination_id` WHERE `schedule`.`date` = '" +
-    date +
+    req.params.date +
+    "' AND `destination`.`name` = '" +
+    req.params.location +
     "' ORDER BY `schedule`.`schedule_id` ASC";
   db.query(sql, function (err, result) {
     for (h in result) {
@@ -90,31 +91,46 @@ router.get("/getschedule/:date", function (req, res) {
       data[i]["seat_onbuy"] = seat_onbuy;
       seat_onbuy = 0;
     }
-    console.log(data)
+    console.log(data);
     res.send(data);
   });
 });
 
 router.post("/buyticket", function (req, res) {
   const user_id = req.body.user_id;
-  const point_up = req.body.point_up
-  const point_down = req.body.point_down
-  const seat_amount = req.body.seat_amount
-  const schedule_id = req.body.schedule_id
+  const point_up = req.body.point_up;
+  const point_down = req.body.point_down;
+  const seat_amount = req.body.seat_amount;
+  const schedule_id = req.body.schedule_id;
   const seat_all_van = req.body.seat_all;
   let temp_seat = 0;
 
-  const today =  new Date(new Date().getTime() +  600000)
+  const today = new Date(new Date().getTime() + 600000);
   const date =
     today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
   const time =
     today.getHours() + "" + today.getMinutes() + "" + today.getSeconds();
   const dateTime_exp = date + "" + time;
   const sql_check =
-  "SELECT `ticket`.`seat_amount` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` WHERE `schedule`.`schedule_id` =" +
-  schedule_id +
-  " AND `ticket`.`status_id` < 3";
-  const sql_insert = "INSERT INTO `ticket`(`ticket_id`, `customer_id`, `schedule_id`, `pickup_point`, `getdown_point`, `seat_amount`, `receipt_img`, `status_id`, `time_on_buy`, `time_exp`) VALUES (NULL,'"+user_id+"','"+schedule_id+"','"+point_up+"','"+point_down+"','"+seat_amount+"','','0','TIMESTAMP()','"+dateTime_exp+"')";
+    "SELECT `ticket`.`seat_amount` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` WHERE `schedule`.`schedule_id` =" +
+    schedule_id +
+    " AND `ticket`.`status_id` < 3";
+  const sql_insert =
+    "INSERT INTO `ticket`(`ticket_id`, `customer_id`, `schedule_id`, `pickup_point`, `getdown_point`, `seat_amount`, `receipt_img`, `status_id`, `time_on_buy`, `time_exp`) VALUES (NULL,'" +
+    user_id +
+    "','" +
+    schedule_id +
+    "','" +
+    point_up +
+    "','" +
+    point_down +
+    "','" +
+    seat_amount +
+    "','','0',current_timestamp(),'" +
+    dateTime_exp +
+    "')";
+  //console.log(sql_check)
+  console.log(sql_insert);
   db.query(sql_check, function (err, result) {
     for (i in result) {
       temp_seat += result[i].seat_amount;
@@ -123,28 +139,43 @@ router.post("/buyticket", function (req, res) {
       if (seat_amount <= seat_all_van - temp_seat) {
         db.query(sql_insert, function (err, result) {
           if (err) {
-            res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง");
+            res.send("1");
           } else {
-            res.send("เพิ่มรอบรถเรียบร้อย");
+            res.send(result.insertId.toString());
           }
         });
       } else {
-        res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง");
+        res.send("1");
       }
     } else {
-      res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง");
+      res.send("1");
     }
   });
-})
+});
 
-router.post("/upload_img ", function (req, res) {
-  let img = req.body.img;
-  let ticket_id = req.body.ticket_id
-  const sql = "UPDATE `ticket` SET `receipt_img` = '"+img+"' WHERE `ticket`.`ticket_id` = '"+ticket_id+"';"
+router.post("/upload_img", function (req, res) {
+  const sql = "SELECT * FROM `ticket` WHERE `ticket_id` = '"+req.body.ticket_id+"'";
   db.query(sql, function (err, result) {
-    res.send(result.insertId)
+    console.log(result[0].status_id)
+    if (result[0].status_id < 3) {
+      const sql_upload =
+        "UPDATE `ticket` SET `receipt_img` = '" +
+        req.body.photo +
+        "' , `status_id` = '2' WHERE `ticket`.`ticket_id` = '" +
+        req.body.ticket_id +
+        "';";
+      db.query(sql_upload, function (err, result) {
+        if (err) {
+          res.send("1");
+        } else {
+          res.send("0");
+        }
+      });
+    } else {
+      res.send("2");
+    }
   });
-})
+});
 
 ///+sec*1000
 //const today = new Date(new Date().getTime() + 600000);

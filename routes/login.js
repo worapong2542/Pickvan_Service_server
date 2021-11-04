@@ -52,5 +52,41 @@ router.post("/regist_customer",function(req,res){
   });
 })
 
+router.get("/driver_getpoint_up", function (req, res) {
+  console.log('a')
+  const time_2_future = new Date(new Date().getTime() + 7200000);
+  const time_2_past = new Date(new Date().getTime() - 7200000);
+  const settime_2_future = time_2_future.getHours() + "" + time_2_future.getMinutes() + "" + time_2_future.getSeconds();
+  const settime_2_past = time_2_past.getHours() + "" + time_2_past.getMinutes() + "" + time_2_past.getSeconds();     
+  const date = time_2_future.getFullYear() + "" + (time_2_future.getMonth() + 1) + "" + time_2_future.getDate();               
+  const sql = "SELECT * FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE  `schedule`.`date` = '2021-10-21'"
+  let point_temp = []
+  let seat_temp = 0 
+  let ticket_id_temp = ""
+  let data = []
+  db.query(sql, function (err, result) {
+      for(i in result){
+          if(result[i].pickup_point == "" ) {
+          } else{ 
+                if(point_temp.includes(result[i].pickup_point) === false){
+              point_temp.push(result[i].pickup_point)
+          }
+          }
+      }
+      for(x in point_temp){
+          for(h in result){
+              if(result[h].pickup_point == point_temp[x]){
+                  seat_temp += result[h].seat_amount
+                  ticket_id_temp += " " + result[h].ticket_id
+              }
+          }
+          data.push({point:point_temp[x],amount_all:seat_temp,id:ticket_id_temp})
+          seat_temp= 0 
+          ticket_id_temp = ""
+      }
+      res.send(data)
+  })
+})
+
 
 module.exports = router;
