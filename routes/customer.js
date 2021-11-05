@@ -154,9 +154,10 @@ router.post("/buyticket", function (req, res) {
 });
 
 router.post("/upload_img", function (req, res) {
-  const sql = "SELECT * FROM `ticket` WHERE `ticket_id` = '"+req.body.ticket_id+"'";
+  const sql =
+    "SELECT * FROM `ticket` WHERE `ticket_id` = '" + req.body.ticket_id + "'";
   db.query(sql, function (err, result) {
-    console.log(result[0].status_id)
+    console.log(result[0].status_id);
     if (result[0].status_id < 3) {
       const sql_upload =
         "UPDATE `ticket` SET `receipt_img` = '" +
@@ -175,6 +176,32 @@ router.post("/upload_img", function (req, res) {
       res.send("2");
     }
   });
+});
+
+router.get("/get_myticket/:id", function (req, res) {
+  const today = new Date(new Date());
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  console.log(date);
+  const sql =
+    "SELECT * FROM `schedule` INNER JOIN `ticket` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` INNER JOIN `destination` ON`destination`.`destination_id` = `van`.`destination_id` WHERE `ticket`.`customer_id` = '" +
+    req.params.id +
+    "' AND `schedule`.`date` = '" +
+    date +
+    "'";
+  db.query(sql_upload, function (err, result) {
+    if (err) {
+      res.send("เกิดข้อผิดผลาด");
+    } else {
+      res.send(result);
+    }
+  });
+});
+
+router.get("/test", function (req, res) {
+  let text = '{"name":"John", "age":30, "city":"New York"}';
+  const obj = JSON.parse(text);
+  res.send(obj.name);
 });
 
 ///+sec*1000
