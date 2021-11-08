@@ -68,7 +68,6 @@ router.get("/driver_getpoint_down/:id", function (req, res) {
 });
 
 router.get("/driver_getpoint_up/:id", function (req, res) {
-  console.log("point_up");
   const id = req.params.id;
   const time_2_future = new Date(new Date().getTime() + 7200000);
   const time_2_past = new Date(new Date().getTime() - 7200000);
@@ -97,7 +96,6 @@ router.get("/driver_getpoint_up/:id", function (req, res) {
   let ticket_id_temp = "";
   let data = [];
   db.query(sql, function (err, result) {
-    console.log(result);
     for (i in result) {
       if (result[i].pickup_point == "") {
       } else {
@@ -145,15 +143,18 @@ router.post("/login_driver", function (req, res) {
   });
 });
 
-router.get("/get_location/:id/:location", function (req, res) {
+router.get("/get_location/:id/:lat/:long", function (req, res) {
+  // '{\"latitude\": 13.779301, \"longitude\": 100.5603960}' 
+  const format_location = {latitude:req.params.lat,longitude:req.params.long};
+  console.log(format_location)
   const sql =
     "UPDATE `driver` SET `location_status` = '1', `location` = '" +
-    location +
+    JSON.stringify(format_location) +
     "' WHERE `driver`.`driver_id` = '" +
     req.params.id +
     "';";
   db.query(sql, function (err, result) {
-    res.send(result)
+    res.send("ok")
   });
 });
 
@@ -163,16 +164,17 @@ router.get("/del_location/:id/", function (req, res) {
     req.params.id +
     "';";
   db.query(sql, function (err, result) {
-   res.send(result)
+    res.send(result);
   });
 });
 
 router.get("/test", function (req, res) {
-  const sql = "SELECT * FROM `driver` WHERE `driver_id` = 'DV1'";
+  const sql = "SELECT * FROM `driver` WHERE `driver_id` = 'Dv7'";
   db.query(sql, function (err, result) {
-      let data_JSON = JSON.parse(result[0].location)
-      let x = data_JSON.longitude
-    res.send(x.toString())
+    let data_JSON = JSON.parse(result[0].location);
+    let long = data_JSON.longitude;
+    let lat = data_JSON.latitude;
+    res.send(long.toString()+lat.toString());
   });
 });
 

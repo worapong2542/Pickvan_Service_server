@@ -175,20 +175,26 @@ router.get("/ticketdata/:id", function (req, res) {
   let walkin = 0;
   let app = 0;
   let ticket_id = "";
+  let ticket_id_waiting = "";
+  let waiting = 0
   var sql =
     "SELECT * FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` WHERE `schedule`.`schedule_id` = " +
     id +
     " ORDER BY `ticket`.`ticket_id` ASC";
   db.query(sql, function (err, result) {
     for (i in result) {
-      if (result[i].customer_id == 0) {
+      if (result[i].status_id == 3) {
+      } else if (result[i].customer_id == 0) {
         walkin += result[i].seat_amount;
-      } else {
+      } else if(result[i].status_id == 1 || result[i].status_id == 0){
+        waiting += result[i].seat_amount;
+        ticket_id_waiting += result[i].ticket_id + ",  ";
+      }else {
         app += result[i].seat_amount;
         ticket_id += result[i].ticket_id + ",  ";
       }
     }
-    res.send({ ticket_id: ticket_id, walkin: walkin, app: app });
+    res.send({ ticket_id: ticket_id, walkin: walkin, app: app,ticket_id_waiting:ticket_id_waiting, waiting_amount:waiting});
   });
 });
 
@@ -248,26 +254,23 @@ router.get("/auto_schedule_del/:id/", function (req, res) {
   });
 });
 
-router.get(
-  "/auto_schedule_update/:id/:time/:price",
-  function (req, res) {
-    const sql =
-      "UPDATE `auto_schedule` SET `price`='" +
-      req.params.price +
-      "',`time`='" +
-      req.params.time +
-      "' WHERE `id` = '" +
-      req.params.id +
-      "'";
-    db.query(sql, function (err, result) {
-      if (err) {
-        res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง");
-      } else {
-        res.send("แก้ไขข้อมูลเรียบร้อย");
-      }
-    });
-  }
-);
+router.get("/auto_schedule_update/:id/:time/:price", function (req, res) {
+  const sql =
+    "UPDATE `auto_schedule` SET `price`='" +
+    req.params.price +
+    "',`time`='" +
+    req.params.time +
+    "' WHERE `id` = '" +
+    req.params.id +
+    "'";
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.send("เกิดข้อผิดผลาด กรุณาลองใหม่อีกครั้ง");
+    } else {
+      res.send("แก้ไขข้อมูลเรียบร้อย");
+    }
+  });
+});
 
 router.get(
   "/auto_schedule_add/:time/:price/:license_plate",

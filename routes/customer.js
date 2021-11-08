@@ -129,8 +129,6 @@ router.post("/buyticket", function (req, res) {
     "','','0',current_timestamp(),'" +
     dateTime_exp +
     "')";
-  //console.log(sql_check)
-  console.log(sql_insert);
   db.query(sql_check, function (err, result) {
     for (i in result) {
       temp_seat += result[i].seat_amount;
@@ -154,6 +152,7 @@ router.post("/buyticket", function (req, res) {
 });
 
 router.post("/upload_img", function (req, res) {
+  console.log("id"+ req.body.ticket_id )
   const sql =
     "SELECT * FROM `ticket` WHERE `ticket_id` = '" + req.body.ticket_id + "'";
   db.query(sql, function (err, result) {
@@ -162,7 +161,7 @@ router.post("/upload_img", function (req, res) {
       const sql_upload =
         "UPDATE `ticket` SET `receipt_img` = '" +
         req.body.photo +
-        "' , `status_id` = '2' WHERE `ticket`.`ticket_id` = '" +
+        "' , `status_id` = '1' WHERE `ticket`.`ticket_id` = '" +
         req.body.ticket_id +
         "';";
       db.query(sql_upload, function (err, result) {
@@ -186,10 +185,10 @@ router.get("/get_myticket/:id", function (req, res) {
   const sql =
     "SELECT * FROM `schedule` INNER JOIN `ticket` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` INNER JOIN `destination` ON`destination`.`destination_id` = `van`.`destination_id` WHERE `ticket`.`customer_id` = '" +
     req.params.id +
-    "' AND `schedule`.`date` = '" +
+    "' AND `schedule`.`date` >= '" +
     date +
     "'";
-  db.query(sql_upload, function (err, result) {
+  db.query(sql, function (err, result) {
     if (err) {
       res.send("เกิดข้อผิดผลาด");
     } else {
