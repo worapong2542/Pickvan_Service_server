@@ -146,7 +146,6 @@ router.post("/login_driver", function (req, res) {
 router.get("/get_location/:id/:lat/:long", function (req, res) {
   // '{\"latitude\": 13.779301, \"longitude\": 100.5603960}' 
   const format_location = {latitude:req.params.lat,longitude:req.params.long};
-  console.log(format_location)
   const sql =
     "UPDATE `driver` SET `location_status` = '1', `location` = '" +
     JSON.stringify(format_location) +

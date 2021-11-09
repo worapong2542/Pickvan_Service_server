@@ -146,7 +146,6 @@ router.get(
       "', '', '2', current_timestamp(), '" +
       dateTime +
       "')";
-    console.log(sql);
     db.query(sql_check, function (err, result) {
       for (i in result) {
         temp_seat += result[i].seat_amount;

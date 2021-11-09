@@ -55,21 +55,21 @@ cron.schedule("*/10 * * * * *", () => {
   });
 });
 
-cron.schedule("59 45 12 * * *", () => {
+cron.schedule("*/10 * * * * *", () => {
+  const sql_get = 'SELECT * FROM `auto_schedule`'
+  let text_insert =' "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES '
   const today = new Date(new Date().getTime() + 2 * 86400000);
   const date =
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const sql_get =
-    "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES (NULL, '9:00', '" +
-    date +
-    "', '120', 'กง1234'), (NULL, '15:00', '" +
-    date +
-    "', '120', 'นย5432'), (NULL, '12:00', '" +
-    date +
-    "', '160', 'ปพ8543');";
   db.query(sql_get, function (err, result) {
-    console.log(result);
+    for(i in result){
+    text_insert += "(NULL, '"+result[i].time+"', '" + date +"', '"+result[i].price+"', '"+result[i].license_plate+"')"
+    }
   });
+  console.log(text_insert)
+  // db.query(text_insert, function (err, result) {
+  //   console.log(result);
+  // });
 });
 
 app.listen("3001", () => {

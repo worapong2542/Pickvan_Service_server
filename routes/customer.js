@@ -91,7 +91,6 @@ router.get("/getschedule/:date/:location", function (req, res) {
       data[i]["seat_onbuy"] = seat_onbuy;
       seat_onbuy = 0;
     }
-    console.log(data);
     res.send(data);
   });
 });
@@ -152,11 +151,9 @@ router.post("/buyticket", function (req, res) {
 });
 
 router.post("/upload_img", function (req, res) {
-  console.log("id"+ req.body.ticket_id )
   const sql =
     "SELECT * FROM `ticket` WHERE `ticket_id` = '" + req.body.ticket_id + "'";
   db.query(sql, function (err, result) {
-    console.log(result[0].status_id);
     if (result[0].status_id < 3) {
       const sql_upload =
         "UPDATE `ticket` SET `receipt_img` = '" +
