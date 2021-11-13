@@ -106,9 +106,18 @@ router.post("/buyticket", function (req, res) {
 
   const today = new Date(new Date().getTime() + 600000);
   const date =
-    today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
+    today.getFullYear() +
+    "" +
+    (today.getMonth() + 11) +
+    "" +
+    (today.getDate() + 10);
   const time =
-    today.getHours() + "" + today.getMinutes() + "" + today.getSeconds();
+    today.getHours() +
+    10 +
+    "" +
+    (today.getMinutes() + 10) +
+    "" +
+    (today.getSeconds() + 10);
   const dateTime_exp = date + "" + time;
   const sql_check =
     "SELECT `ticket`.`seat_amount` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` WHERE `schedule`.`schedule_id` =" +
@@ -195,19 +204,28 @@ router.get("/get_myticket/:id", function (req, res) {
 });
 
 router.get("/get_driver_location/:id", function (req, res) {
-  const sql = "SELECT `driver`.`location`,`driver`.`location_status` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` INNER JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` INNER JOIN `driver` ON `van`.`driver_id` = `driver`.`driver_id` WHERE `ticket`.`ticket_id` = '"+req.params.id+"'"
+  const sql =
+    "SELECT `driver`.`location`,`driver`.`location_status` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` INNER JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` INNER JOIN `driver` ON `van`.`driver_id` = `driver`.`driver_id` WHERE `ticket`.`ticket_id` = '" +
+    req.params.id +
+    "'";
   db.query(sql, function (err, result) {
-    if(result[0].location_status == 0){
-      res.send({location_status:0})
-    }else{
-      res.send({location_status:1,location_detail:JSON.parse(result[0].location)})
+    if (result[0].location_status == 0) {
+      res.send({ location_status: 0 });
+    } else {
+      res.send({
+        location_status: 1, 
+        location_detail: JSON.parse(result[0].location),
+      });
     }
   });
 });
 router.get("/get_Status/:id", function (req, res) {
-  const sql = "SELECT `ticket`.`status_id` FROM `ticket` WHERE `ticket_id` = '"+req.params.id+"'"
+  const sql =
+    "SELECT `ticket`.`status_id` FROM `ticket` WHERE `ticket_id` = '" +
+    req.params.id +
+    "'";
   db.query(sql, function (err, result) {
-   res.send(result[0])
+    res.send(result[0]);
   });
 });
 
