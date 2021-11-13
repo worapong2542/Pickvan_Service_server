@@ -194,10 +194,21 @@ router.get("/get_myticket/:id", function (req, res) {
   });
 });
 
-router.get("/test", function (req, res) {
-  let text = '{"name":"John", "age":30, "city":"New York"}';
-  const obj = JSON.parse(text);
-  res.send(obj.name);
+router.get("/get_driver_location/:id", function (req, res) {
+  const sql = "SELECT `driver`.`location`,`driver`.`location_status` FROM `ticket` INNER JOIN `schedule` ON `ticket`.`schedule_id` = `schedule`.`schedule_id` INNER JOIN `van` ON `schedule`.`license_plate` = `van`.`license_plate` INNER JOIN `driver` ON `van`.`driver_id` = `driver`.`driver_id` WHERE `ticket`.`ticket_id` = '"+req.params.id+"'"
+  db.query(sql, function (err, result) {
+    if(result[0].location_status == 0){
+      res.send({location_status:0})
+    }else{
+      res.send({location_status:1,location_detail:JSON.parse(result[0].location)})
+    }
+  });
+});
+router.get("/get_Status/:id", function (req, res) {
+  const sql = "SELECT `ticket`.`status_id` FROM `ticket` WHERE `ticket_id` = '"+req.params.id+"'"
+  db.query(sql, function (err, result) {
+   res.send(result[0])
+  });
 });
 
 ///+sec*1000

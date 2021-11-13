@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 app.use(cors());
-app.use(express.json({limit: '50mb'}));
+app.use(express.json({ limit: "50mb" }));
 const seller = require("./routes/seller");
 const customer = require("./routes/customer");
-const user = require("./routes/login")
+const user = require("./routes/login");
 const driver = require("./routes/driver");
 const cron = require("node-cron");
 var mysql = require("mysql");
@@ -55,21 +55,32 @@ cron.schedule("*/10 * * * * *", () => {
   });
 });
 
-cron.schedule("*/10 * * * * *", () => {
-  const sql_get = 'SELECT * FROM `auto_schedule`'
-  let text_insert =' "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES '
+cron.schedule("1 1 1 * * *", () => {
+  const sql_get = "SELECT * FROM `auto_schedule`";
+  let text_insert =
+    'INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES ';
   const today = new Date(new Date().getTime() + 2 * 86400000);
   const date =
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   db.query(sql_get, function (err, result) {
-    for(i in result){
-    text_insert += "(NULL, '"+result[i].time+"', '" + date +"', '"+result[i].price+"', '"+result[i].license_plate+"')"
+    for (i in result) {
+      text_insert +=
+        "(NULL, '" +
+        result[i].time +
+        "', '" +
+        date +
+        "', '" +
+        result[i].price +
+        "', '" +
+        result[i].license_plate +
+        "'),";
     }
+    const sql = text_insert.substring(0, text_insert.length - 1);
+    console.log(sql)
+    db.query(sql, function (err, result) {
+      console.log(result);
+    });
   });
-  console.log(text_insert)
-  // db.query(text_insert, function (err, result) {
-  //   console.log(result);
-  // });
 });
 
 app.listen("3001", () => {
