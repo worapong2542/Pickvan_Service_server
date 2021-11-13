@@ -32,9 +32,19 @@ app.use("/driver", driver);
 cron.schedule("*/10 * * * * *", () => {
   const today = new Date(new Date());
   const date =
-    today.getFullYear() + "" + (today.getMonth() + 1) + "" + today.getDate();
+    today.getFullYear() +
+    "" +
+    (today.getMonth() + 11) +
+    "" +
+    (today.getDate() + 10);
   const time =
-    today.getHours() + "" + today.getMinutes() + "" + today.getSeconds();
+    today.getHours() +
+    10 +
+    "" +
+    (today.getMinutes() + 10) +
+    "" +
+    (today.getSeconds() + 10);
+  console.log(time);
   const dateTime = date + "" + time;
   const sql_get =
     "SELECT `ticket`.`ticket_id`,`ticket`.`status_id`,`ticket`.`time_exp` FROM `ticket` WHERE `ticket`.`status_id` = 0 AND `ticket`.`time_exp` <= " +
@@ -58,7 +68,7 @@ cron.schedule("*/10 * * * * *", () => {
 cron.schedule("1 1 1 * * *", () => {
   const sql_get = "SELECT * FROM `auto_schedule`";
   let text_insert =
-    'INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES ';
+    "INSERT INTO `schedule` (`schedule_id`, `time`, `date`, `price`, `license_plate`) VALUES ";
   const today = new Date(new Date().getTime() + 2 * 86400000);
   const date =
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
@@ -76,7 +86,7 @@ cron.schedule("1 1 1 * * *", () => {
         "'),";
     }
     const sql = text_insert.substring(0, text_insert.length - 1);
-    console.log(sql)
+    console.log(sql);
     db.query(sql, function (err, result) {
       console.log(result);
     });
