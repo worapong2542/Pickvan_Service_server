@@ -50,7 +50,6 @@ router.get("/destination", function (req, res) {
 });
 
 router.get("/getschedule/:date/:location", function (req, res) {
-  const seat_select = 2;
   let seat_onbuy = 0;
   let temp_schedule_id = [];
   let data = [];

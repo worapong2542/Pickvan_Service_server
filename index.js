@@ -44,7 +44,6 @@ cron.schedule("*/10 * * * * *", () => {
     (today.getMinutes() + 10) +
     "" +
     (today.getSeconds() + 10);
-  console.log(time);
   const dateTime = date + "" + time;
   const sql_get =
     "SELECT `ticket`.`ticket_id`,`ticket`.`status_id`,`ticket`.`time_exp` FROM `ticket` WHERE `ticket`.`status_id` = 0 AND `ticket`.`time_exp` <= " +
