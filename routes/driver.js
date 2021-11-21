@@ -36,16 +36,17 @@ router.get("/driver_getpoint_down/:id", function (req, res) {
     (time_2_future.getMonth() + 1) +
     "-" +
     time_2_future.getDate();
-  const sql =
-    "SELECT `ticket`.`seat_amount`, `ticket`.`getdown_point`, `ticket`.`ticket_id`,`schedule`.`date`,`schedule`.`time` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = '" +
-    id +
-    "' AND `schedule`.`time` >= '" +
-    settime_2_past +
-    "' AND `schedule`.`time`<= '" +
-    settime_2_future +
-    "' AND `schedule`.`date` = '" +
-    date +
-    "'";
+  // const sql =
+  //   "SELECT `ticket`.`seat_amount`, `ticket`.`getdown_point`, `ticket`.`ticket_id`,`schedule`.`date`,`schedule`.`time` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = '" +
+  //   id +
+  //   "' AND `schedule`.`time` >= '" +
+  //   settime_2_past +
+  //   "' AND `schedule`.`time`<= '" +
+  //   settime_2_future +
+  //   "' AND `schedule`.`date` = '" +
+  //   date +
+  //   "'";
+const sql = "SELECT `ticket`.`seat_amount`, `ticket`.`getdown_point`, `ticket`.`ticket_id`,`schedule`.`date`,`schedule`.`time` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = 'Dv2' AND `schedule`.`time` >= '12:00' AND `schedule`.`time`<= '16:00' AND `schedule`.`date` = '2021-11-22';"
   let point_temp = [];
   let seat_temp = 0;
   let ticket_id_temp = "";
@@ -105,16 +106,17 @@ router.get("/driver_getpoint_up/:id", function (req, res) {
     (time_2_future.getMonth() + 1) +
     "-" +
     time_2_future.getDate();
-  const sql =
-    "SELECT `ticket`.`seat_amount`, `ticket`.`pickup_point`, `ticket`.`ticket_id` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE  `van`.`driver_id` = '" +
-    id +
-    "' AND `schedule`.`time` >= '" +
-    settime_2_past +
-    "' AND `schedule`.`time` <= '" +
-    settime_2_future +
-    "' AND `schedule`.`date` = '" +
-    date +
-    "'";
+  // const sql =
+  //   "SELECT `ticket`.`seat_amount`, `ticket`.`pickup_point`, `ticket`.`ticket_id` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE  `van`.`driver_id` = '" +
+  //   id +
+  //   "' AND `schedule`.`time` >= '" +
+  //   settime_2_past +
+  //   "' AND `schedule`.`time` <= '" +
+  //   settime_2_future +
+  //   "' AND `schedule`.`date` = '" +
+  //   date +
+  //   "'";
+  const sql = "SELECT `ticket`.`seat_amount`, `ticket`.`pickup_point`, `ticket`.`ticket_id`,`schedule`.`date`,`schedule`.`time` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = 'Dv2' AND `schedule`.`time` >= '12:00' AND `schedule`.`time`<= '16:00' AND `schedule`.`date` = '2021-11-22';"
   let point_temp = [];
   let seat_temp = 0;
   let ticket_id_temp = "";
