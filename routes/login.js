@@ -37,17 +37,14 @@ router.post("/regist_customer",function(req,res){
   const email = req.body.email;
   const password = req.body.password;
   const phoneNum = req.body.phoneNum;
-  console.log(password)
   const sql = "SELECT `customer`.`customer_email` FROM `customer` WHERE `customer_email` =  '" + email + "'"
 
   db.query(sql, function (err, result) { 
     if(result.length>0){  
-      console.log(result)
       res.send({status:0})
     }else{
       const sqlInsert = "INSERT INTO `customer`(`customer_id`, `customer_userName`, `customer_email`, `customer_phone_num`, `customer_password`) VALUES (NULL,'"+userName+"','"+email+"','"+phoneNum+"','"+password+"')"
       db.query(sqlInsert, function (err, result) {
-      console.log(result.insertId);
         res.send({status:1,id:result.insertId})
       });
        }
@@ -55,7 +52,6 @@ router.post("/regist_customer",function(req,res){
 })
 
 router.get("/driver_getpoint_up", function (req, res) {
-  console.log('a')
   const time_2_future = new Date(new Date().getTime() + 7200000);
   const time_2_past = new Date(new Date().getTime() - 7200000);
   const settime_2_future = time_2_future.getHours() + "" + time_2_future.getMinutes() + "" + time_2_future.getSeconds();

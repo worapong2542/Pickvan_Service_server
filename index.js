@@ -7,6 +7,7 @@ const seller = require("./routes/seller");
 const customer = require("./routes/customer");
 const user = require("./routes/login");
 const driver = require("./routes/driver");
+const buy = require("./routes/buy");
 const cron = require("node-cron");
 var mysql = require("mysql");
 var db = mysql.createConnection({
@@ -25,6 +26,7 @@ app.use("/seller", seller);
 app.use("/customer", customer);
 app.use("/user", user);
 app.use("/driver", driver);
+app.use("/buy", buy);
 
 //work on time set (sec min hour day mounth)
 //https://www.npmjs.com/package/node-cron
@@ -52,8 +54,8 @@ cron.schedule("*/10 * * * * *", () => {
     for (i in result) {
       if (result[i].time_exp < dateTime) {
         const sql_update =
-          "UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = " +
-          result[i].ticket_id;
+          "UPDATE `ticket` SET `status_id` = '3' WHERE `ticket`.`ticket_id` = '" +
+          result[i].ticket_id+"'";
         db.query(sql_update, function (err, result) {
           if (err) {
             console.log(err);
@@ -91,6 +93,7 @@ cron.schedule("1 1 1 * * *", () => {
     });
   });
 });
+
 
 app.listen("3001", () => {
   console.log("Server is running on port 3001");

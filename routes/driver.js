@@ -28,7 +28,8 @@ router.get("/driver_getpoint_down/:id", function (req, res) {
     ":" +
     time_2_past.getMinutes() +
     ":" +
-    time_2_past.getSeconds() + ".0000";
+    time_2_past.getSeconds() +
+    ".0000";
   const date =
     time_2_future.getFullYear() +
     "-" +
@@ -36,11 +37,20 @@ router.get("/driver_getpoint_down/:id", function (req, res) {
     "-" +
     time_2_future.getDate();
   const sql =
-    "SELECT `ticket`.`seat_amount`, `ticket`.`getdown_point`, `ticket`.`ticket_id` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = '"+id+"' AND `schedule`.`time` >= '12:00:00' AND `schedule`.`time`<= '16:00:00' AND `schedule`.`date` = '2021-11-15'";
-    let point_temp = [];
+    "SELECT `ticket`.`seat_amount`, `ticket`.`getdown_point`, `ticket`.`ticket_id`,`schedule`.`date`,`schedule`.`time` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE `van`.`driver_id` = '" +
+    id +
+    "' AND `schedule`.`time` >= '" +
+    settime_2_past +
+    "' AND `schedule`.`time`<= '" +
+    settime_2_future +
+    "' AND `schedule`.`date` = '" +
+    date +
+    "'";
+  let point_temp = [];
   let seat_temp = 0;
   let ticket_id_temp = "";
   let data = [];
+  let route = [];
   db.query(sql, function (err, result) {
     for (i in result) {
       if (point_temp.includes(result[i].getdown_point) === false) {
@@ -62,7 +72,13 @@ router.get("/driver_getpoint_down/:id", function (req, res) {
       seat_temp = 0;
       ticket_id_temp = "";
     }
-    res.send(data);
+    if (result.length > 0) {
+      route.push({
+        date: result[0].date,
+        time: result[0].time,
+      });
+    }
+    res.send({ point: data, route: route });
   });
 });
 
@@ -81,7 +97,8 @@ router.get("/driver_getpoint_up/:id", function (req, res) {
     ":" +
     time_2_past.getMinutes() +
     ":" +
-    time_2_past.getSeconds()+ ".0000";
+    time_2_past.getSeconds() +
+    ".0000";
   const date =
     time_2_future.getFullYear() +
     "-" +
@@ -89,7 +106,15 @@ router.get("/driver_getpoint_up/:id", function (req, res) {
     "-" +
     time_2_future.getDate();
   const sql =
-    "SELECT `ticket`.`seat_amount`, `ticket`.`pickup_point`, `ticket`.`ticket_id` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE  `van`.`driver_id` = '"+id+"' AND `schedule`.`time` >= '12:00:00' AND `schedule`.`time` <= '16:00:00' AND `schedule`.`date` = '2021-11-15'";
+    "SELECT `ticket`.`seat_amount`, `ticket`.`pickup_point`, `ticket`.`ticket_id` FROM `ticket`  INNER JOIN `schedule` ON `schedule`.`schedule_id` = `ticket`.`schedule_id` INNER JOIN `van` ON `van`.`license_plate` = `schedule`.`license_plate` WHERE  `van`.`driver_id` = '" +
+    id +
+    "' AND `schedule`.`time` >= '" +
+    settime_2_past +
+    "' AND `schedule`.`time` <= '" +
+    settime_2_future +
+    "' AND `schedule`.`date` = '" +
+    date +
+    "'";
   let point_temp = [];
   let seat_temp = 0;
   let ticket_id_temp = "";
@@ -143,8 +168,11 @@ router.post("/login_driver", function (req, res) {
 });
 
 router.get("/get_location/:id/:lat/:long", function (req, res) {
-  // '{\"latitude\": 13.779301, \"longitude\": 100.5603960}' 
-  const format_location = {latitude:req.params.lat,longitude:req.params.long};
+  // '{\"latitude\": 13.779301, \"longitude\": 100.5603960}'
+  const format_location = {
+    latitude: req.params.lat,
+    longitude: req.params.long,
+  };
   const sql =
     "UPDATE `driver` SET `location_status` = '1', `location` = '" +
     JSON.stringify(format_location) +
@@ -152,7 +180,7 @@ router.get("/get_location/:id/:lat/:long", function (req, res) {
     req.params.id +
     "';";
   db.query(sql, function (err, result) {
-    res.send("ok")
+    res.send("ok");
   });
 });
 
@@ -165,5 +193,15 @@ router.get("/del_location/:id/", function (req, res) {
     res.send(result);
   });
 });
+
+// router.get("/test", function (req, res) {
+//   const sql = "SELECT * FROM `driver` WHERE `driver_id` = 'Dv7'";
+//   db.query(sql, function (err, result) {
+//     let data_JSON = JSON.parse(result[0].location);
+//     let long = data_JSON.longitude;
+//     let lat = data_JSON.latitude;
+//     res.send(long.toString()+lat.toString());
+//   });
+// });
 
 module.exports = router;
