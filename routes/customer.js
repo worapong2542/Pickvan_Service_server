@@ -94,7 +94,6 @@ router.get("/getschedule/:date/:location", function (req, res) {
   });
 });
 
-
 router.post("/upload_img", function (req, res) {
   const sql =
     "SELECT * FROM `ticket` WHERE `ticket_id` = '" + req.body.ticket_id + "'";
@@ -148,12 +147,30 @@ router.get("/get_driver_location/:id", function (req, res) {
       res.send({ location_status: 0 });
     } else {
       res.send({
-        location_status: 1, 
+        location_status: 1,
         location_detail: JSON.parse(result[0].location),
       });
     }
   });
 });
+
+router.get("/demo_gps/:index", function (req, res) {
+  const location = [
+    { latitude: 13.643567343671377, longitude: 100.69405352120185 },
+    { latitude: 13.641385737360448, longitude: 100.698230821488 },
+    { latitude: 13.639877932774056, longitude: 100.70093043899121 },
+    { latitude: 13.638259652396961, longitude: 100.70378918877832 },
+    { latitude: 13.636751829759174, longitude: 100.70656837513611 },
+    { latitude: 13.63538207562584, longitude: 100.7087962696059 },
+    { latitude: 13.633625686124178, longitude: 100.71216652461068 },
+    { latitude: 13.631758809989591, longitude: 100.71561066123539 },
+  ];
+  res.send({
+    location_status: 1,
+    location_detail: location[req.params.index],
+  });
+});
+
 router.get("/get_Status/:id", function (req, res) {
   const sql =
     "SELECT `ticket`.`status_id` FROM `ticket` WHERE `ticket_id` = '" +

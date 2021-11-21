@@ -86,7 +86,7 @@ function gen_key() {
   return (
     value_for_key[today.getFullYear() - 2021] +
     value_for_key[today.getMonth()] +
-    value_for_key[today.getDate() - 1] +
+    value_for_key[today.getDate() ] +
     value_for_key[today.getHours()] +
     value_for_key[today.getMinutes()] +
     value_for_key[today.getSeconds()] +
@@ -94,7 +94,7 @@ function gen_key() {
   );
 }
 
-router.get("/test", function (req, res) {
+router.get("/genkey", function (req, res) {
   const key = "key value is " + gen_key();
   res.send(key);
 });
